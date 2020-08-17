@@ -3,16 +3,18 @@ import {
   SocietyServiceProxy,
   SocietyDto,
   SocietyListDto,
-  ListResultDto,
-  PagedRequestDto
-} from "shared/service-proxies/service";
-import { appModuleAnimation } from "@shared/animation/routerTransmission";
-import { PagedListingComponentBase } from "shared/PagedListingComponentBase";
+  SocietyListDtoListResultDto,
+} from "@shared/service-proxies/service-proxies";
+import { appModuleAnimation } from '@shared/animations/routerTransition';
+import { PagedListingComponentBase,PagedRequestDto, } from "@shared/paged-listing-component-base";
 @Component({
   templateUrl: "./Societies.component.html",
-  animations: [appModuleAnimation],
+  animations: [appModuleAnimation()],
 })
 export class SocietiesComponent extends PagedListingComponentBase<SocietyDto> {
+  protected delete(entity: SocietyDto): void {
+    throw new Error("Method not implemented.");
+  }
   societies: SocietyListDto[]=[];
 
   // @ViewChild('createSocietyModal') createSocietyModal: CreateSocietyComponent;
@@ -31,7 +33,7 @@ export class SocietiesComponent extends PagedListingComponentBase<SocietyDto> {
 
   loadSociety(){
     this._societyService.getList()
-      .subscribe((result: ListResultDto<SocietyListDto> )=>{
+      .subscribe((result: SocietyListDtoListResultDto )=>{
         this.societies =result.items;
       });
   }

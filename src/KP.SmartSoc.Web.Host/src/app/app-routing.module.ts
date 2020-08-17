@@ -24,7 +24,7 @@ import { SocietyDetailComponent } from './society/society-detail/society-detail.
                     { path: 'tenants', component: TenantsComponent, data: { permission: 'Pages.Tenants' }, canActivate: [AppRouteGuard] },
                     { path: 'about', component: AboutComponent },
                     { path: 'update-password', component: ChangePasswordComponent },
-                    { path: 'societies', component:SocietiesComponent, data:{permission:'Pages.Societies'},canActivate:[AppRouteGuard]},
+                    { path: 'societies', component:SocietiesComponent},//, data:{permission:'Pages.Societies'},canActivate:[AppRouteGuard]
                     { path: 'societies/:societyId',component:SocietyDetailComponent}
                 ]
             }

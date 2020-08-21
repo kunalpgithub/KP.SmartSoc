@@ -9,12 +9,12 @@ using System.Threading.Tasks;
 
 namespace KP.SmartSoc.Society
 {
-    public interface ISocietyAppService : IApplicationService
+    public interface ISocietyAppService : IAsyncCrudAppService<SocietyDto, Guid, PagedSocietyResultRequestDto, CreateScoietyDto, SocietyDto>
     {
-        public Task<SocietyDto> GetAsync(EntityDto<Guid> input);
-        public Task CreateAsync(CreateSocietyInput input);
-        public Task<SocietyMember> AddMember(AddSocietyMemberInput input);
-        public Task<ListResultDto<SocietyListDto>> GetListAsync();
+        //public Task<SocietyDto> GetAsync(EntityDto<Guid> input);
+        //public Task CreateAsync(CreateSocietyInput input);
+        //public Task<SocietyMember> AddMember(AddSocietyMemberInput input);
+        //public Task<ListResultDto<SocietyListDto>> GetListAsync();
         //public Task<IReadOnlyList<SocietyMember>> GetMembersAsync(GetSocietyMemberInput society);
     }
 }

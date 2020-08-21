@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using Abp.Authorization.Users;
 using Abp.Extensions;
+using Castle.Components.DictionaryAdapter;
+using KP.SmartSoc.Society;
 
 namespace KP.SmartSoc.Authorization.Users
 {
@@ -30,5 +32,11 @@ namespace KP.SmartSoc.Authorization.Users
 
             return user;
         }
+
+        public string HouseNo { get; set; }
+        public string Building { get; set; }
+
+        public virtual Guid ParkingId{get;set;}
+        public virtual List<Parking> Parkings { get; set; }
     }
 }

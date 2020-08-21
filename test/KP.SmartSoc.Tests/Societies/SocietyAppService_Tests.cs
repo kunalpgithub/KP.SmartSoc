@@ -21,7 +21,7 @@ namespace KP.SmartSoc.Tests.Societies
 
         [Fact]
         public async Task Should_Get_Test_Societies() {
-            var output = await _societyAppService.GetListAsync();
+            var output = await _societyAppService.GetAllAsync(new PagedSocietyResultRequestDto { Keyword="",SkipCount=0,MaxResultCount=10 });
             output.Items.Count.ShouldBe(1);
         }
 
@@ -29,7 +29,7 @@ namespace KP.SmartSoc.Tests.Societies
         public async Task Should_Create_Society() {
             var address = "Motera";
 
-            await _societyAppService.CreateAsync(new CreateSocietyInput
+            await _societyAppService.CreateAsync(new CreateScoietyDto
             {
                 
                 Address = address,

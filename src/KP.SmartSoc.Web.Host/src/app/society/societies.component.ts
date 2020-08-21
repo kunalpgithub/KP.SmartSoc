@@ -1,45 +1,108 @@
 ﻿import { Component, Injector, ViewChild } from "@angular/core";
 import {
-  SocietyServiceProxy,
-  SocietyDto,
-  SocietyListDto,
-  SocietyListDtoListResultDto,
+    SocietyServiceProxy,
+    SocietyDto,
+    SocietyDtoPagedResultDto,
 } from "@shared/service-proxies/service-proxies";
 import { appModuleAnimation } from '@shared/animations/routerTransition';
-import { PagedListingComponentBase,PagedRequestDto, } from "@shared/paged-listing-component-base";
+import { PagedListingComponentBase, PagedRequestDto, } from "@shared/paged-listing-component-base";
+import { CreateSocietyComponent } from './create-society/create-society.component';
+import { EditSocietyComponent } from './edit-society/edit-society.component'
+
+import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
+import { finalize } from "rxjs/operators";
+
+class PagedSocietiesRequestDto extends PagedRequestDto {
+    keyword: string;
+}
+
 @Component({
-  templateUrl: "./Societies.component.html",
-  animations: [appModuleAnimation()],
+    templateUrl: "./Societies.component.html",
+    animations: [appModuleAnimation()],
 })
 export class SocietiesComponent extends PagedListingComponentBase<SocietyDto> {
-  protected delete(entity: SocietyDto): void {
-    throw new Error("Method not implemented.");
-  }
-  societies: SocietyListDto[]=[];
+    keyword = '';
+    societies: SocietyDto[] = [];
 
-  // @ViewChild('createSocietyModal') createSocietyModal: CreateSocietyComponent;
-  
-  constructor(
-    injector: Injector,
-    private _societyService: SocietyServiceProxy
-  ) {
-    super(injector);
-  }
+    constructor(
+        injector: Injector,
+        private _societyService: SocietyServiceProxy,
+        private _modalService: BsModalService
+    ) {
+        super(injector);
+    }
 
-  protected list(request:PagedRequestDto,pageNumber: number,finishedCallback:Function){
-    this.loadSociety();
-    finishedCallback();
-  }
+    protected delete(entity: SocietyDto): void {
 
-  loadSociety(){
-    this._societyService.getList()
-      .subscribe((result: SocietyListDtoListResultDto )=>{
-        this.societies =result.items;
-      });
-  }
+        abp.message.confirm(
+            "Are you sure want to delete this society",
+            undefined,
+            (result: boolean) => {
+                this._societyService
+                    .delete(entity.id)
+                    .pipe(
+                        finalize(() => {
+                            abp.notify.success("Successfully Deleted");
+                            this.refresh();
+                        })
+                    )
+                    .subscribe(() => { })
+            }
+        )
 
-  // //Show Modals
-  // createEvent():void{
-  //   this.createSocietyModal.show();
-  // }
+    }
+
+    list(request: PagedSocietiesRequestDto,
+        pageNumber: number,
+        finishedCallback: Function): void {
+        request.keyword = this.keyword;
+        this._societyService.getAll(this.keyword, request.skipCount, request.maxResultCount)
+            .pipe(
+                finalize(() => { finishedCallback(); })
+            )
+            .subscribe((result: SocietyDtoPagedResultDto) => {
+                this.societies = result.items;
+                this.showPaging(result, pageNumber);
+            });
+    }
+
+    //Show Modals
+    createSociety(): void {
+        this.showCreateOrEditSocietyDialog();
+    }
+
+    editSociety(society: SocietyDto): void {
+        this.showCreateOrEditSocietyDialog(society.id);
+    }
+
+    showCreateOrEditSocietyDialog(id?: string): void {
+        let createSocietyDialog: BsModalRef;
+        if (!id) {
+            createSocietyDialog = this._modalService.show(
+                CreateSocietyComponent,
+                {
+                    class: 'modal-lg',
+                }
+            );
+        }
+        else {
+            createSocietyDialog = this._modalService.show(
+                EditSocietyComponent,
+                {
+                    class: 'modal-lg',
+                    initialState: {
+                        id: id
+                    }
+                }
+            );
+        }
+
+        createSocietyDialog.content.onSave.subscribe(() => {
+            this.refresh();
+        });
+    }
+
+    refresh(): void {
+        this.getDataPage(this.pageNumber);
+    }
 }

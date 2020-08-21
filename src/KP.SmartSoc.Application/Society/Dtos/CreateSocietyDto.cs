@@ -1,16 +1,15 @@
-﻿using Abp.Application.Services.Dto;
-using Abp.AutoMapper;
+﻿using Abp.AutoMapper;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace KP.SmartSoc.Society.Dtos
 {
-    [AutoMap(typeof(Society))]
-    public class SocietyDto: FullAuditedEntityDto<Guid>
+    [AutoMapTo(typeof(Society))]
+    public class CreateScoietyDto
     {
-        //public virtual int TenantId { get; set; }
-
         public string FullName { get; set; }
         public string Address { get; set; }
         public string City { get; set; }
@@ -18,5 +17,6 @@ namespace KP.SmartSoc.Society.Dtos
         public string Zipcode { get; set; }
         public string Country { get; set; }
         public string RegistrationNumber { get; set; }
+
     }
 }

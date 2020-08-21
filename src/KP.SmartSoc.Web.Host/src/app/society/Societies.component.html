@@ -1,77 +1,132 @@
-<div class="row clearfix" [@routerTransition]>
-    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-
-        <div class="block-header row">
-            <div class="col-md-6">
-                <h2>
-                    {{l('Societies')}}
-                    <!-- (<input type="checkbox" id="includeCanceledEvents" [(ngModel)]="includeCanceledEvents" (change)="includeCanceledEventsCheckboxChanged()">
-                    <label for="includeCanceledEvents">{{l("ShowCanceledEvents")}}</label>) -->
-                </h2>
-            </div>
-            <div class="col-md-6 text-right">
-                <button type="button" data-toggle="modal" class="btn btn-primary btn-circle waves-effect waves-circle waves-float pull-right" >
-                    <!-- (click)="createSociety()" -->
-                    <i class="material-icons">add</i>
-                </button>
-            </div>
+<div [@routerTransition]>
+  <section class="content-header">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-6">
+          <h2>
+            {{ "Societies" | localize }}
+            <!-- (<input type="checkbox" id="includeCanceledEvents" [(ngModel)]="includeCanceledEvents" (change)="includeCanceledEventsCheckboxChanged()">
+                        <label for="includeCanceledEvents">{{l("ShowCanceledEvents")}}</label>) -->
+          </h2>
         </div>
-
-        <div class="row">
-            <div class="col-md-6" *ngFor="let society of societies">
-                <div class="card">
-                    <div ><!-- [class]="event.isCancelled ? 'header bg-red' : 'header'" -->
-                        <h2>
-                            {{society.fullName}} <small class="event-description">{{society.city}}</small>
-                        </h2>
-                        <ul class="header-dropdown m-r-0">
-                            <li>
-                                <i class="fa fa-calendar"></i>
-                            </li>
-                            <li>
-                                <span>{{society.registrationNumber}}</span>
-                            </li>
-                        </ul>
-                        <hr />
-                        <div class="row">
-                            <div class="col-md-6">
-                                <!-- <small *ngIf="event.registrationsCount < event.maxRegistrationCount">
-                                    {{l('XofYregistered', event.registrationsCount,event.maxRegistrationCount)}}
-                                </small>
-                                <small *ngIf="event.maxRegistrationCount > 0 && event.registrationsCount >= event.maxRegistrationCount">
-                                    {{l("XregisteredNoNewRegistrationAvailable", event.registrationsCount)}}
-                                </small>
-                                <small *ngIf="event.maxRegistrationCount <= 0">
-                                    {{l("XregisteredUnlimitedRegistrations", event.registrationsCount)}}
-                                </small> -->
-                                <small>
-                                    {{society.address}}
-                                </small>
-                                <small>
-                                    {{society.city}}
-                                </small>
-                                <small>
-                                    {{society.state}}
-                                </small>
-                                <small>
-                                    {{society.zip}}
-                                </small>
-                                <small>
-                                    {{society.country}}
-                                </small>
-                            </div>
-                            <div class="col-md-6 text-right">
-                                <button type="button" class="btn bg-deep-purple waves-effect btn-sm"
-                                        [routerLink]="['/app/societies', event.id]">
-                                    <span>{{l("Details")}}</span>
-                                    <i class="fa fa-arrow-circle-right"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="col-6 text-right">
+          <a href="javascript:;" class="btn bg-blue" (click)="createSociety()">
+            <i class="fa fa-plus-square"></i>
+            {{ "Create" | localize }}
+          </a>
+          <!-- <button type="button" data-toggle="modal" class="btn btn-primary btn-circle waves-effect waves-circle waves-float pull-right" >
+                        (click)="createSociety()">
+                        <i class="material-icons">add</i>
+                    </button> -->
         </div>
+      </div>
     </div>
+  </section>
+  <section class="content px-2">
+    <div class="container-fluid">
+      <div class="card">
+        <div class="card-header">
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <button
+                type="button"
+                class="btn bg-blue"
+                (click)="getDataPage(1)"
+              >
+                <i class="fas fa-search"></i>
+              </button>
+            </div>
+            <input
+              type="text"
+              class="form-control"
+              name="keyword"
+              [placeholder]="'SearchWithThreeDot' | localize"
+              [(ngModel)]="keyword"
+              (keyup.enter)="getDataPage(1)"
+            />
+          </div>
+        </div>
+
+        <div class="card-body table-responsive p-0">
+          <table class="table table-hover text-nowrap" [busy]="isTableLoading">
+            <thead class="bg-light">
+              <tr>
+                <th>{{ "Full Name" | localize }}</th>
+                <th>{{ "Registration Number" | localize }}</th>
+                <th>{{ "Address" | localize }}</th>
+                <th>{{ "City" | localize }}</th>
+                <th>{{ "State" | localize }}</th>
+                <th>{{ "Country" | localize }}</th>
+                <th>{{ "Zipcode" | localize }}</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                *ngFor="
+                  let society of societies
+                    | paginate
+                      : {
+                          id: 'server',
+                          itemsPerPage: pageSize,
+                          currentPage: pageNumber,
+                          totalItems: totalItems
+                        }
+                "
+              >
+                <td>{{ society.fullName }}</td>
+                <td>{{ society.registrationNumber }}</td>
+                <td>{{ society.address }}</td>
+                <td>{{ society.city }}</td>
+                <td>{{ society.state }}</td>
+                <td>{{ society.country }}</td>
+                <td>{{ society.zipcode }}</td>
+                <td>
+                  <button
+                    type="button"
+                    class="btn btn-sm bg-secondary"
+                    (click)="editSociety(society)"
+                  >
+                    <i class="fas fa-pencil-alt"></i>
+                    {{ "Edit" | localize }}
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-sm bg-danger mx-2"
+                    (click)="delete(society)"
+                  >
+                    <i class="fas fa-trash"></i>
+                    {{ "Delete" | localize }}
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="card-footer bg-light border-top">
+          <div class="row">
+            <div class="col-sm-4 col-12 text-sm-left text-center">
+              <button class="btn btn-secondary" (click)="refresh()">
+                <i class="fas fa-redo-alt"></i>
+              </button>
+            </div>
+            <div class="col-sm-4 col-12 text-center">
+              <p class="mb-0 my-2">
+                {{ "TotalRecordsCount" | localize: totalItems }}
+              </p>
+            </div>
+            <div class="col-sm-4 col-12">
+              <div class="float-sm-right m-auto">
+                <abp-pagination-controls
+                  id="server"
+                  (pageChange)="getDataPage($event)"
+                >
+                </abp-pagination-controls>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 </div>
-<!-- <create-society-modal #createSocietyModal (modalSave)="refresh()"></create-society-modal> -->

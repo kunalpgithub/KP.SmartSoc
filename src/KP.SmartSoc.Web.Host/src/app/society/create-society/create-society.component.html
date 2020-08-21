@@ -1,0 +1,69 @@
+<form class="form-horizontal"
+      autocomplete="off"
+      #createSocietyForm="ngForm"
+      (ngSubmit)="save()">
+    <abp-modal-header [title]="'Create New Society' | localize"
+                      (onCloseClick)="bsModalRef.hide()"></abp-modal-header>
+    <div class="modal-body">
+        <div class="form-group row required">
+            <label class="col-md-3 col-form-label">{{ "FullName" | localize }}</label>
+            <div class="col-md-9">
+                <input class="form-control"
+                       type="text"
+                       name="FullName"
+                       [(ngModel)]="society.fullName"
+                       required
+                       maxlength="64"
+                       minlength="2" />
+            </div>
+        </div>
+        <div class="form-group row required">
+            <label class="col-md-3 col-form-label">{{ "Address" | localize }}</label>
+            <div class="col-md-9">
+                <textarea name="address"
+                          class="form-control"
+                          [(ngModel)]="society.address"></textarea>
+
+            </div>
+        </div>
+        <div class="form-group row required">
+            <label class="col-md-3 col-form-label">{{ "City" | localize }}</label>
+            <div class="col-md-9">
+                <input type="text" name="City" class="form-control" [(ngModel)]="society.city" />
+
+            </div>
+        </div>
+        <div class="form-group row required">
+            <label class="col-md-3 col-form-label">{{ "State" | localize }}</label>
+            <div class="col-md-9">
+                <input type="text" name="State" class="form-control" [(ngModel)]="society.state" />
+
+            </div>
+        </div>
+        <div class="form-group row required">
+            <label class="col-md-3 col-form-label">{{ "Country" | localize }}</label>
+            <div class="col-md-9">
+                <input type="text" name="Country" class="form-control" [(ngModel)]="society.country" />
+
+            </div>
+        </div>
+        <div class="form-group row required">
+            <label class="col-md-3 col-form-label">{{"Zipcode" | localize}}</label>
+            <div class="col-md-9">
+                <input type="text" name="zip" class="form-control" [(ngModel)]="society.zipcode" />
+
+            </div>
+        </div>
+        <div class="form-group row required">
+            <label class="col-md-3 col-form-label">{{ "Registration Number" | localize }}</label>
+            <div class="col-md-9">
+                <input type="text" name="RegistrationNumber" class="form-control" [(ngModel)]="society.registrationNumber" />
+
+            </div>
+        </div>
+    </div>
+    <abp-modal-footer [cancelDisabled]="saving"
+                      [saveDisabled]="!createSocietyForm.form.valid || saving"
+                      (onCancelClick)="bsModalRef.hide()">
+    </abp-modal-footer>
+</form>

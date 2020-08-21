@@ -41,6 +41,8 @@ import { SidebarMenuComponent } from './layout/sidebar-menu.component';
 //Society
 import {SocietiesComponent} from './society/societies.component';
 import {SocietyDetailComponent} from './society/society-detail/society-detail.component';
+import {CreateSocietyComponent} from './society/create-society/create-society.component';
+import { EditSocietyComponent } from './society/edit-society/edit-society.component';
 
 @NgModule({
   declarations: [
@@ -73,8 +75,9 @@ import {SocietyDetailComponent} from './society/society-detail/society-detail.co
     SidebarMenuComponent,
     //Society
     SocietiesComponent,
-    SocietyDetailComponent
-
+    SocietyDetailComponent,
+    CreateSocietyComponent,
+    EditSocietyComponent
   ],
   imports: [
     CommonModule,

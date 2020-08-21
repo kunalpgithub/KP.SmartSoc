@@ -4,14 +4,16 @@ using KP.SmartSoc.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace KP.SmartSoc.Migrations
 {
     [DbContext(typeof(SmartSocDbContext))]
-    partial class SmartSocDbContextModelSnapshot : ModelSnapshot
+    [Migration("20200821124249_Extending entity, Tenant to Society, User to SocietyMember")]
+    partial class ExtendingentityTenanttoSocietyUsertoSocietyMember
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1555,6 +1557,9 @@ namespace KP.SmartSoc.Migrations
 
                     b.Property<int?>("EditionId")
                         .HasColumnType("int");
+
+                    b.Property<string>("FullName")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");

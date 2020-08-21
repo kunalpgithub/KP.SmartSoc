@@ -11,32 +11,26 @@ using System.Threading.Tasks;
 namespace KP.SmartSoc.Society
 {
     [Table("SocietyMember")]
-    public class SocietyMember : CreationAuditedEntity, IMustHaveTenant
+    public class Member : FullAuditedEntity
     {
-        public virtual int TenantId { get; set; }
+        protected Member() { }
+
         public string HouseNo { get; set; }
+        public string Building { get; set; }
 
         public virtual Society Society { get; protected set; }
         public virtual Guid SocietyId { get; protected set; }
 
-        [ForeignKey("UserId")]
-        public virtual User User { get; protected set; }
-        public virtual long UserId { get; protected set; }
-
-        protected SocietyMember() { }
-
-        public static SocietyMember CreateAsync(Society @society, string HouseNo, User user, ISocietyMemberAddPolicy addPolicy)
+        public static Member CreateAsync(Society @society, string HouseNo, User user, ISocietyMemberAddPolicy addPolicy)
         {
             addPolicy.CheckAddPolicy(@society, user);
 
-            return new SocietyMember
+            return new Member
             {
                 //Id = Guid.NewGuid(),
                 HouseNo = HouseNo,
                 Society = @society,
                 SocietyId = @society.Id,
-                User = user,
-                UserId = user.Id
             };
         }
     }

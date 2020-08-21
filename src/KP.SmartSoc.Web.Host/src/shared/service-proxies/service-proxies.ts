@@ -736,114 +736,6 @@ export class SocietyServiceProxy {
     }
 
     /**
-     * @param body (optional) 
-     * @return Success
-     */
-    addMember(body: AddSocietyMemberInput | undefined): Observable<SocietyMember> {
-        let url_ = this.baseUrl + "/api/services/app/Society/AddMember";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(body);
-
-        let options_ : any = {
-            body: content_,
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Content-Type": "application/json-patch+json",
-                "Accept": "text/plain"
-            })
-        };
-
-        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processAddMember(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processAddMember(<any>response_);
-                } catch (e) {
-                    return <Observable<SocietyMember>><any>_observableThrow(e);
-                }
-            } else
-                return <Observable<SocietyMember>><any>_observableThrow(response_);
-        }));
-    }
-
-    protected processAddMember(response: HttpResponseBase): Observable<SocietyMember> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = SocietyMember.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<SocietyMember>(<any>null);
-    }
-
-    /**
-     * @param body (optional) 
-     * @return Success
-     */
-    create(body: CreateSocietyInput | undefined): Observable<void> {
-        let url_ = this.baseUrl + "/api/services/app/Society/Create";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(body);
-
-        let options_ : any = {
-            body: content_,
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Content-Type": "application/json-patch+json",
-            })
-        };
-
-        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processCreate(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processCreate(<any>response_);
-                } catch (e) {
-                    return <Observable<void>><any>_observableThrow(e);
-                }
-            } else
-                return <Observable<void>><any>_observableThrow(response_);
-        }));
-    }
-
-    protected processCreate(response: HttpResponseBase): Observable<void> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return _observableOf<void>(<any>null);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<void>(<any>null);
-    }
-
-    /**
      * @param id (optional) 
      * @return Success
      */
@@ -900,10 +792,23 @@ export class SocietyServiceProxy {
     }
 
     /**
+     * @param keyword (optional) 
+     * @param skipCount (optional) 
+     * @param maxResultCount (optional) 
      * @return Success
-     */s
-    getList(): Observable<SocietyListDtoListResultDto> {
-        let url_ = this.baseUrl + "/api/services/app/Society/GetList";
+     */
+    getAll(keyword: string | null | undefined, skipCount: number | undefined, maxResultCount: number | undefined): Observable<SocietyDtoPagedResultDto> {
+        let url_ = this.baseUrl + "/api/services/app/Society/GetAll?";
+        if (keyword !== undefined && keyword !== null)
+            url_ += "Keyword=" + encodeURIComponent("" + keyword) + "&";
+        if (skipCount === null)
+            throw new Error("The parameter 'skipCount' cannot be null.");
+        else if (skipCount !== undefined)
+            url_ += "SkipCount=" + encodeURIComponent("" + skipCount) + "&";
+        if (maxResultCount === null)
+            throw new Error("The parameter 'maxResultCount' cannot be null.");
+        else if (maxResultCount !== undefined)
+            url_ += "MaxResultCount=" + encodeURIComponent("" + maxResultCount) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -915,20 +820,20 @@ export class SocietyServiceProxy {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetList(response_);
+            return this.processGetAll(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGetList(<any>response_);
+                    return this.processGetAll(<any>response_);
                 } catch (e) {
-                    return <Observable<SocietyListDtoListResultDto>><any>_observableThrow(e);
+                    return <Observable<SocietyDtoPagedResultDto>><any>_observableThrow(e);
                 }
             } else
-                return <Observable<SocietyListDtoListResultDto>><any>_observableThrow(response_);
+                return <Observable<SocietyDtoPagedResultDto>><any>_observableThrow(response_);
         }));
     }
 
-    protected processGetList(response: HttpResponseBase): Observable<SocietyListDtoListResultDto> {
+    protected processGetAll(response: HttpResponseBase): Observable<SocietyDtoPagedResultDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -939,7 +844,7 @@ export class SocietyServiceProxy {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = SocietyListDtoListResultDto.fromJS(resultData200);
+            result200 = SocietyDtoPagedResultDto.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -947,7 +852,171 @@ export class SocietyServiceProxy {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<SocietyListDtoListResultDto>(<any>null);
+        return _observableOf<SocietyDtoPagedResultDto>(<any>null);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    create(body: CreateScoietyDto | undefined): Observable<SocietyDto> {
+        let url_ = this.baseUrl + "/api/services/app/Society/Create";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json-patch+json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCreate(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCreate(<any>response_);
+                } catch (e) {
+                    return <Observable<SocietyDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<SocietyDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processCreate(response: HttpResponseBase): Observable<SocietyDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = SocietyDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<SocietyDto>(<any>null);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    update(body: SocietyDto | undefined): Observable<SocietyDto> {
+        let url_ = this.baseUrl + "/api/services/app/Society/Update";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json-patch+json",
+                "Accept": "text/plain"
+            })
+        };
+
+        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUpdate(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUpdate(<any>response_);
+                } catch (e) {
+                    return <Observable<SocietyDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<SocietyDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processUpdate(response: HttpResponseBase): Observable<SocietyDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = SocietyDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<SocietyDto>(<any>null);
+    }
+
+    /**
+     * @param id (optional) 
+     * @return Success
+     */
+    delete(id: string | undefined): Observable<void> {
+        let url_ = this.baseUrl + "/api/services/app/Society/Delete?";
+        if (id === null)
+            throw new Error("The parameter 'id' cannot be null.");
+        else if (id !== undefined)
+            url_ += "Id=" + encodeURIComponent("" + id) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+            })
+        };
+
+        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDelete(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDelete(<any>response_);
+                } catch (e) {
+                    return <Observable<void>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<void>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processDelete(response: HttpResponseBase): Observable<void> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return _observableOf<void>(<any>null);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<void>(<any>null);
     }
 }
 
@@ -3002,951 +3071,6 @@ export interface IGetCurrentLoginInformationsOutput {
     tenant: TenantLoginInfoDto;
 }
 
-export class AddSocietyMemberInput implements IAddSocietyMemberInput {
-    societyId: string;
-    houseNo: string | undefined;
-
-    constructor(data?: IAddSocietyMemberInput) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.societyId = _data["societyId"];
-            this.houseNo = _data["houseNo"];
-        }
-    }
-
-    static fromJS(data: any): AddSocietyMemberInput {
-        data = typeof data === 'object' ? data : {};
-        let result = new AddSocietyMemberInput();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["societyId"] = this.societyId;
-        data["houseNo"] = this.houseNo;
-        return data; 
-    }
-
-    clone(): AddSocietyMemberInput {
-        const json = this.toJSON();
-        let result = new AddSocietyMemberInput();
-        result.init(json);
-        return result;
-    }
-}
-
-export interface IAddSocietyMemberInput {
-    societyId: string;
-    houseNo: string | undefined;
-}
-
-export class Society implements ISociety {
-    tenantId: number;
-    readonly fullName: string | undefined;
-    readonly address: string | undefined;
-    readonly city: string | undefined;
-    readonly state: string | undefined;
-    readonly zipcode: string | undefined;
-    readonly country: string | undefined;
-    readonly registrationNumber: string | undefined;
-    readonly members: SocietyMember[] | undefined;
-    isDeleted: boolean;
-    deleterUserId: number | undefined;
-    deletionTime: moment.Moment | undefined;
-    lastModificationTime: moment.Moment | undefined;
-    lastModifierUserId: number | undefined;
-    creationTime: moment.Moment;
-    creatorUserId: number | undefined;
-    id: string;
-
-    constructor(data?: ISociety) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.tenantId = _data["tenantId"];
-            (<any>this).fullName = _data["fullName"];
-            (<any>this).address = _data["address"];
-            (<any>this).city = _data["city"];
-            (<any>this).state = _data["state"];
-            (<any>this).zipcode = _data["zipcode"];
-            (<any>this).country = _data["country"];
-            (<any>this).registrationNumber = _data["registrationNumber"];
-            if (Array.isArray(_data["members"])) {
-                (<any>this).members = [] as any;
-                for (let item of _data["members"])
-                    (<any>this).members.push(SocietyMember.fromJS(item));
-            }
-            this.isDeleted = _data["isDeleted"];
-            this.deleterUserId = _data["deleterUserId"];
-            this.deletionTime = _data["deletionTime"] ? moment(_data["deletionTime"].toString()) : <any>undefined;
-            this.lastModificationTime = _data["lastModificationTime"] ? moment(_data["lastModificationTime"].toString()) : <any>undefined;
-            this.lastModifierUserId = _data["lastModifierUserId"];
-            this.creationTime = _data["creationTime"] ? moment(_data["creationTime"].toString()) : <any>undefined;
-            this.creatorUserId = _data["creatorUserId"];
-            this.id = _data["id"];
-        }
-    }
-
-    static fromJS(data: any): Society {
-        data = typeof data === 'object' ? data : {};
-        let result = new Society();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["tenantId"] = this.tenantId;
-        data["fullName"] = this.fullName;
-        data["address"] = this.address;
-        data["city"] = this.city;
-        data["state"] = this.state;
-        data["zipcode"] = this.zipcode;
-        data["country"] = this.country;
-        data["registrationNumber"] = this.registrationNumber;
-        if (Array.isArray(this.members)) {
-            data["members"] = [];
-            for (let item of this.members)
-                data["members"].push(item.toJSON());
-        }
-        data["isDeleted"] = this.isDeleted;
-        data["deleterUserId"] = this.deleterUserId;
-        data["deletionTime"] = this.deletionTime ? this.deletionTime.toISOString() : <any>undefined;
-        data["lastModificationTime"] = this.lastModificationTime ? this.lastModificationTime.toISOString() : <any>undefined;
-        data["lastModifierUserId"] = this.lastModifierUserId;
-        data["creationTime"] = this.creationTime ? this.creationTime.toISOString() : <any>undefined;
-        data["creatorUserId"] = this.creatorUserId;
-        data["id"] = this.id;
-        return data; 
-    }
-
-    clone(): Society {
-        const json = this.toJSON();
-        let result = new Society();
-        result.init(json);
-        return result;
-    }
-}
-
-export interface ISociety {
-    tenantId: number;
-    fullName: string | undefined;
-    address: string | undefined;
-    city: string | undefined;
-    state: string | undefined;
-    zipcode: string | undefined;
-    country: string | undefined;
-    registrationNumber: string | undefined;
-    members: SocietyMember[] | undefined;
-    isDeleted: boolean;
-    deleterUserId: number | undefined;
-    deletionTime: moment.Moment | undefined;
-    lastModificationTime: moment.Moment | undefined;
-    lastModifierUserId: number | undefined;
-    creationTime: moment.Moment;
-    creatorUserId: number | undefined;
-    id: string;
-}
-
-export class UserToken implements IUserToken {
-    tenantId: number | undefined;
-    userId: number;
-    loginProvider: string | undefined;
-    name: string | undefined;
-    value: string | undefined;
-    expireDate: moment.Moment | undefined;
-    id: number;
-
-    constructor(data?: IUserToken) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.tenantId = _data["tenantId"];
-            this.userId = _data["userId"];
-            this.loginProvider = _data["loginProvider"];
-            this.name = _data["name"];
-            this.value = _data["value"];
-            this.expireDate = _data["expireDate"] ? moment(_data["expireDate"].toString()) : <any>undefined;
-            this.id = _data["id"];
-        }
-    }
-
-    static fromJS(data: any): UserToken {
-        data = typeof data === 'object' ? data : {};
-        let result = new UserToken();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["tenantId"] = this.tenantId;
-        data["userId"] = this.userId;
-        data["loginProvider"] = this.loginProvider;
-        data["name"] = this.name;
-        data["value"] = this.value;
-        data["expireDate"] = this.expireDate ? this.expireDate.toISOString() : <any>undefined;
-        data["id"] = this.id;
-        return data; 
-    }
-
-    clone(): UserToken {
-        const json = this.toJSON();
-        let result = new UserToken();
-        result.init(json);
-        return result;
-    }
-}
-
-export interface IUserToken {
-    tenantId: number | undefined;
-    userId: number;
-    loginProvider: string | undefined;
-    name: string | undefined;
-    value: string | undefined;
-    expireDate: moment.Moment | undefined;
-    id: number;
-}
-
-export class UserLogin implements IUserLogin {
-    tenantId: number | undefined;
-    userId: number;
-    loginProvider: string;
-    providerKey: string;
-    id: number;
-
-    constructor(data?: IUserLogin) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.tenantId = _data["tenantId"];
-            this.userId = _data["userId"];
-            this.loginProvider = _data["loginProvider"];
-            this.providerKey = _data["providerKey"];
-            this.id = _data["id"];
-        }
-    }
-
-    static fromJS(data: any): UserLogin {
-        data = typeof data === 'object' ? data : {};
-        let result = new UserLogin();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["tenantId"] = this.tenantId;
-        data["userId"] = this.userId;
-        data["loginProvider"] = this.loginProvider;
-        data["providerKey"] = this.providerKey;
-        data["id"] = this.id;
-        return data; 
-    }
-
-    clone(): UserLogin {
-        const json = this.toJSON();
-        let result = new UserLogin();
-        result.init(json);
-        return result;
-    }
-}
-
-export interface IUserLogin {
-    tenantId: number | undefined;
-    userId: number;
-    loginProvider: string;
-    providerKey: string;
-    id: number;
-}
-
-export class UserRole implements IUserRole {
-    tenantId: number | undefined;
-    userId: number;
-    roleId: number;
-    creationTime: moment.Moment;
-    creatorUserId: number | undefined;
-    id: number;
-
-    constructor(data?: IUserRole) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.tenantId = _data["tenantId"];
-            this.userId = _data["userId"];
-            this.roleId = _data["roleId"];
-            this.creationTime = _data["creationTime"] ? moment(_data["creationTime"].toString()) : <any>undefined;
-            this.creatorUserId = _data["creatorUserId"];
-            this.id = _data["id"];
-        }
-    }
-
-    static fromJS(data: any): UserRole {
-        data = typeof data === 'object' ? data : {};
-        let result = new UserRole();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["tenantId"] = this.tenantId;
-        data["userId"] = this.userId;
-        data["roleId"] = this.roleId;
-        data["creationTime"] = this.creationTime ? this.creationTime.toISOString() : <any>undefined;
-        data["creatorUserId"] = this.creatorUserId;
-        data["id"] = this.id;
-        return data; 
-    }
-
-    clone(): UserRole {
-        const json = this.toJSON();
-        let result = new UserRole();
-        result.init(json);
-        return result;
-    }
-}
-
-export interface IUserRole {
-    tenantId: number | undefined;
-    userId: number;
-    roleId: number;
-    creationTime: moment.Moment;
-    creatorUserId: number | undefined;
-    id: number;
-}
-
-export class UserClaim implements IUserClaim {
-    tenantId: number | undefined;
-    userId: number;
-    claimType: string | undefined;
-    claimValue: string | undefined;
-    creationTime: moment.Moment;
-    creatorUserId: number | undefined;
-    id: number;
-
-    constructor(data?: IUserClaim) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.tenantId = _data["tenantId"];
-            this.userId = _data["userId"];
-            this.claimType = _data["claimType"];
-            this.claimValue = _data["claimValue"];
-            this.creationTime = _data["creationTime"] ? moment(_data["creationTime"].toString()) : <any>undefined;
-            this.creatorUserId = _data["creatorUserId"];
-            this.id = _data["id"];
-        }
-    }
-
-    static fromJS(data: any): UserClaim {
-        data = typeof data === 'object' ? data : {};
-        let result = new UserClaim();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["tenantId"] = this.tenantId;
-        data["userId"] = this.userId;
-        data["claimType"] = this.claimType;
-        data["claimValue"] = this.claimValue;
-        data["creationTime"] = this.creationTime ? this.creationTime.toISOString() : <any>undefined;
-        data["creatorUserId"] = this.creatorUserId;
-        data["id"] = this.id;
-        return data; 
-    }
-
-    clone(): UserClaim {
-        const json = this.toJSON();
-        let result = new UserClaim();
-        result.init(json);
-        return result;
-    }
-}
-
-export interface IUserClaim {
-    tenantId: number | undefined;
-    userId: number;
-    claimType: string | undefined;
-    claimValue: string | undefined;
-    creationTime: moment.Moment;
-    creatorUserId: number | undefined;
-    id: number;
-}
-
-export class UserPermissionSetting implements IUserPermissionSetting {
-    userId: number;
-    tenantId: number | undefined;
-    name: string;
-    isGranted: boolean;
-    creationTime: moment.Moment;
-    creatorUserId: number | undefined;
-    id: number;
-
-    constructor(data?: IUserPermissionSetting) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.userId = _data["userId"];
-            this.tenantId = _data["tenantId"];
-            this.name = _data["name"];
-            this.isGranted = _data["isGranted"];
-            this.creationTime = _data["creationTime"] ? moment(_data["creationTime"].toString()) : <any>undefined;
-            this.creatorUserId = _data["creatorUserId"];
-            this.id = _data["id"];
-        }
-    }
-
-    static fromJS(data: any): UserPermissionSetting {
-        data = typeof data === 'object' ? data : {};
-        let result = new UserPermissionSetting();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["userId"] = this.userId;
-        data["tenantId"] = this.tenantId;
-        data["name"] = this.name;
-        data["isGranted"] = this.isGranted;
-        data["creationTime"] = this.creationTime ? this.creationTime.toISOString() : <any>undefined;
-        data["creatorUserId"] = this.creatorUserId;
-        data["id"] = this.id;
-        return data; 
-    }
-
-    clone(): UserPermissionSetting {
-        const json = this.toJSON();
-        let result = new UserPermissionSetting();
-        result.init(json);
-        return result;
-    }
-}
-
-export interface IUserPermissionSetting {
-    userId: number;
-    tenantId: number | undefined;
-    name: string;
-    isGranted: boolean;
-    creationTime: moment.Moment;
-    creatorUserId: number | undefined;
-    id: number;
-}
-
-export class Setting implements ISetting {
-    tenantId: number | undefined;
-    userId: number | undefined;
-    name: string;
-    value: string | undefined;
-    lastModificationTime: moment.Moment | undefined;
-    lastModifierUserId: number | undefined;
-    creationTime: moment.Moment;
-    creatorUserId: number | undefined;
-    id: number;
-
-    constructor(data?: ISetting) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.tenantId = _data["tenantId"];
-            this.userId = _data["userId"];
-            this.name = _data["name"];
-            this.value = _data["value"];
-            this.lastModificationTime = _data["lastModificationTime"] ? moment(_data["lastModificationTime"].toString()) : <any>undefined;
-            this.lastModifierUserId = _data["lastModifierUserId"];
-            this.creationTime = _data["creationTime"] ? moment(_data["creationTime"].toString()) : <any>undefined;
-            this.creatorUserId = _data["creatorUserId"];
-            this.id = _data["id"];
-        }
-    }
-
-    static fromJS(data: any): Setting {
-        data = typeof data === 'object' ? data : {};
-        let result = new Setting();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["tenantId"] = this.tenantId;
-        data["userId"] = this.userId;
-        data["name"] = this.name;
-        data["value"] = this.value;
-        data["lastModificationTime"] = this.lastModificationTime ? this.lastModificationTime.toISOString() : <any>undefined;
-        data["lastModifierUserId"] = this.lastModifierUserId;
-        data["creationTime"] = this.creationTime ? this.creationTime.toISOString() : <any>undefined;
-        data["creatorUserId"] = this.creatorUserId;
-        data["id"] = this.id;
-        return data; 
-    }
-
-    clone(): Setting {
-        const json = this.toJSON();
-        let result = new Setting();
-        result.init(json);
-        return result;
-    }
-}
-
-export interface ISetting {
-    tenantId: number | undefined;
-    userId: number | undefined;
-    name: string;
-    value: string | undefined;
-    lastModificationTime: moment.Moment | undefined;
-    lastModifierUserId: number | undefined;
-    creationTime: moment.Moment;
-    creatorUserId: number | undefined;
-    id: number;
-}
-
-export class User implements IUser {
-    normalizedUserName: string;
-    normalizedEmailAddress: string;
-    concurrencyStamp: string | undefined;
-    tokens: UserToken[] | undefined;
-    deleterUser: User;
-    creatorUser: User;
-    lastModifierUser: User;
-    authenticationSource: string | undefined;
-    userName: string;
-    tenantId: number | undefined;
-    emailAddress: string;
-    name: string;
-    surname: string;
-    readonly fullName: string | undefined;
-    password: string;
-    emailConfirmationCode: string | undefined;
-    passwordResetCode: string | undefined;
-    lockoutEndDateUtc: moment.Moment | undefined;
-    accessFailedCount: number;
-    isLockoutEnabled: boolean;
-    phoneNumber: string | undefined;
-    isPhoneNumberConfirmed: boolean;
-    securityStamp: string | undefined;
-    isTwoFactorEnabled: boolean;
-    logins: UserLogin[] | undefined;
-    roles: UserRole[] | undefined;
-    claims: UserClaim[] | undefined;
-    permissions: UserPermissionSetting[] | undefined;
-    settings: Setting[] | undefined;
-    isEmailConfirmed: boolean;
-    isActive: boolean;
-    isDeleted: boolean;
-    deleterUserId: number | undefined;
-    deletionTime: moment.Moment | undefined;
-    lastModificationTime: moment.Moment | undefined;
-    lastModifierUserId: number | undefined;
-    creationTime: moment.Moment;
-    creatorUserId: number | undefined;
-    id: number;
-
-    constructor(data?: IUser) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.normalizedUserName = _data["normalizedUserName"];
-            this.normalizedEmailAddress = _data["normalizedEmailAddress"];
-            this.concurrencyStamp = _data["concurrencyStamp"];
-            if (Array.isArray(_data["tokens"])) {
-                this.tokens = [] as any;
-                for (let item of _data["tokens"])
-                    this.tokens.push(UserToken.fromJS(item));
-            }
-            this.deleterUser = _data["deleterUser"] ? User.fromJS(_data["deleterUser"]) : <any>undefined;
-            this.creatorUser = _data["creatorUser"] ? User.fromJS(_data["creatorUser"]) : <any>undefined;
-            this.lastModifierUser = _data["lastModifierUser"] ? User.fromJS(_data["lastModifierUser"]) : <any>undefined;
-            this.authenticationSource = _data["authenticationSource"];
-            this.userName = _data["userName"];
-            this.tenantId = _data["tenantId"];
-            this.emailAddress = _data["emailAddress"];
-            this.name = _data["name"];
-            this.surname = _data["surname"];
-            (<any>this).fullName = _data["fullName"];
-            this.password = _data["password"];
-            this.emailConfirmationCode = _data["emailConfirmationCode"];
-            this.passwordResetCode = _data["passwordResetCode"];
-            this.lockoutEndDateUtc = _data["lockoutEndDateUtc"] ? moment(_data["lockoutEndDateUtc"].toString()) : <any>undefined;
-            this.accessFailedCount = _data["accessFailedCount"];
-            this.isLockoutEnabled = _data["isLockoutEnabled"];
-            this.phoneNumber = _data["phoneNumber"];
-            this.isPhoneNumberConfirmed = _data["isPhoneNumberConfirmed"];
-            this.securityStamp = _data["securityStamp"];
-            this.isTwoFactorEnabled = _data["isTwoFactorEnabled"];
-            if (Array.isArray(_data["logins"])) {
-                this.logins = [] as any;
-                for (let item of _data["logins"])
-                    this.logins.push(UserLogin.fromJS(item));
-            }
-            if (Array.isArray(_data["roles"])) {
-                this.roles = [] as any;
-                for (let item of _data["roles"])
-                    this.roles.push(UserRole.fromJS(item));
-            }
-            if (Array.isArray(_data["claims"])) {
-                this.claims = [] as any;
-                for (let item of _data["claims"])
-                    this.claims.push(UserClaim.fromJS(item));
-            }
-            if (Array.isArray(_data["permissions"])) {
-                this.permissions = [] as any;
-                for (let item of _data["permissions"])
-                    this.permissions.push(UserPermissionSetting.fromJS(item));
-            }
-            if (Array.isArray(_data["settings"])) {
-                this.settings = [] as any;
-                for (let item of _data["settings"])
-                    this.settings.push(Setting.fromJS(item));
-            }
-            this.isEmailConfirmed = _data["isEmailConfirmed"];
-            this.isActive = _data["isActive"];
-            this.isDeleted = _data["isDeleted"];
-            this.deleterUserId = _data["deleterUserId"];
-            this.deletionTime = _data["deletionTime"] ? moment(_data["deletionTime"].toString()) : <any>undefined;
-            this.lastModificationTime = _data["lastModificationTime"] ? moment(_data["lastModificationTime"].toString()) : <any>undefined;
-            this.lastModifierUserId = _data["lastModifierUserId"];
-            this.creationTime = _data["creationTime"] ? moment(_data["creationTime"].toString()) : <any>undefined;
-            this.creatorUserId = _data["creatorUserId"];
-            this.id = _data["id"];
-        }
-    }
-
-    static fromJS(data: any): User {
-        data = typeof data === 'object' ? data : {};
-        let result = new User();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["normalizedUserName"] = this.normalizedUserName;
-        data["normalizedEmailAddress"] = this.normalizedEmailAddress;
-        data["concurrencyStamp"] = this.concurrencyStamp;
-        if (Array.isArray(this.tokens)) {
-            data["tokens"] = [];
-            for (let item of this.tokens)
-                data["tokens"].push(item.toJSON());
-        }
-        data["deleterUser"] = this.deleterUser ? this.deleterUser.toJSON() : <any>undefined;
-        data["creatorUser"] = this.creatorUser ? this.creatorUser.toJSON() : <any>undefined;
-        data["lastModifierUser"] = this.lastModifierUser ? this.lastModifierUser.toJSON() : <any>undefined;
-        data["authenticationSource"] = this.authenticationSource;
-        data["userName"] = this.userName;
-        data["tenantId"] = this.tenantId;
-        data["emailAddress"] = this.emailAddress;
-        data["name"] = this.name;
-        data["surname"] = this.surname;
-        data["fullName"] = this.fullName;
-        data["password"] = this.password;
-        data["emailConfirmationCode"] = this.emailConfirmationCode;
-        data["passwordResetCode"] = this.passwordResetCode;
-        data["lockoutEndDateUtc"] = this.lockoutEndDateUtc ? this.lockoutEndDateUtc.toISOString() : <any>undefined;
-        data["accessFailedCount"] = this.accessFailedCount;
-        data["isLockoutEnabled"] = this.isLockoutEnabled;
-        data["phoneNumber"] = this.phoneNumber;
-        data["isPhoneNumberConfirmed"] = this.isPhoneNumberConfirmed;
-        data["securityStamp"] = this.securityStamp;
-        data["isTwoFactorEnabled"] = this.isTwoFactorEnabled;
-        if (Array.isArray(this.logins)) {
-            data["logins"] = [];
-            for (let item of this.logins)
-                data["logins"].push(item.toJSON());
-        }
-        if (Array.isArray(this.roles)) {
-            data["roles"] = [];
-            for (let item of this.roles)
-                data["roles"].push(item.toJSON());
-        }
-        if (Array.isArray(this.claims)) {
-            data["claims"] = [];
-            for (let item of this.claims)
-                data["claims"].push(item.toJSON());
-        }
-        if (Array.isArray(this.permissions)) {
-            data["permissions"] = [];
-            for (let item of this.permissions)
-                data["permissions"].push(item.toJSON());
-        }
-        if (Array.isArray(this.settings)) {
-            data["settings"] = [];
-            for (let item of this.settings)
-                data["settings"].push(item.toJSON());
-        }
-        data["isEmailConfirmed"] = this.isEmailConfirmed;
-        data["isActive"] = this.isActive;
-        data["isDeleted"] = this.isDeleted;
-        data["deleterUserId"] = this.deleterUserId;
-        data["deletionTime"] = this.deletionTime ? this.deletionTime.toISOString() : <any>undefined;
-        data["lastModificationTime"] = this.lastModificationTime ? this.lastModificationTime.toISOString() : <any>undefined;
-        data["lastModifierUserId"] = this.lastModifierUserId;
-        data["creationTime"] = this.creationTime ? this.creationTime.toISOString() : <any>undefined;
-        data["creatorUserId"] = this.creatorUserId;
-        data["id"] = this.id;
-        return data; 
-    }
-
-    clone(): User {
-        const json = this.toJSON();
-        let result = new User();
-        result.init(json);
-        return result;
-    }
-}
-
-export interface IUser {
-    normalizedUserName: string;
-    normalizedEmailAddress: string;
-    concurrencyStamp: string | undefined;
-    tokens: UserToken[] | undefined;
-    deleterUser: User;
-    creatorUser: User;
-    lastModifierUser: User;
-    authenticationSource: string | undefined;
-    userName: string;
-    tenantId: number | undefined;
-    emailAddress: string;
-    name: string;
-    surname: string;
-    fullName: string | undefined;
-    password: string;
-    emailConfirmationCode: string | undefined;
-    passwordResetCode: string | undefined;
-    lockoutEndDateUtc: moment.Moment | undefined;
-    accessFailedCount: number;
-    isLockoutEnabled: boolean;
-    phoneNumber: string | undefined;
-    isPhoneNumberConfirmed: boolean;
-    securityStamp: string | undefined;
-    isTwoFactorEnabled: boolean;
-    logins: UserLogin[] | undefined;
-    roles: UserRole[] | undefined;
-    claims: UserClaim[] | undefined;
-    permissions: UserPermissionSetting[] | undefined;
-    settings: Setting[] | undefined;
-    isEmailConfirmed: boolean;
-    isActive: boolean;
-    isDeleted: boolean;
-    deleterUserId: number | undefined;
-    deletionTime: moment.Moment | undefined;
-    lastModificationTime: moment.Moment | undefined;
-    lastModifierUserId: number | undefined;
-    creationTime: moment.Moment;
-    creatorUserId: number | undefined;
-    id: number;
-}
-
-export class SocietyMember implements ISocietyMember {
-    tenantId: number;
-    houseNo: string | undefined;
-    society: Society;
-    readonly societyId: string;
-    user: User;
-    readonly userId: number;
-    creationTime: moment.Moment;
-    creatorUserId: number | undefined;
-    id: number;
-
-    constructor(data?: ISocietyMember) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.tenantId = _data["tenantId"];
-            this.houseNo = _data["houseNo"];
-            this.society = _data["society"] ? Society.fromJS(_data["society"]) : <any>undefined;
-            (<any>this).societyId = _data["societyId"];
-            this.user = _data["user"] ? User.fromJS(_data["user"]) : <any>undefined;
-            (<any>this).userId = _data["userId"];
-            this.creationTime = _data["creationTime"] ? moment(_data["creationTime"].toString()) : <any>undefined;
-            this.creatorUserId = _data["creatorUserId"];
-            this.id = _data["id"];
-        }
-    }
-
-    static fromJS(data: any): SocietyMember {
-        data = typeof data === 'object' ? data : {};
-        let result = new SocietyMember();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["tenantId"] = this.tenantId;
-        data["houseNo"] = this.houseNo;
-        data["society"] = this.society ? this.society.toJSON() : <any>undefined;
-        data["societyId"] = this.societyId;
-        data["user"] = this.user ? this.user.toJSON() : <any>undefined;
-        data["userId"] = this.userId;
-        data["creationTime"] = this.creationTime ? this.creationTime.toISOString() : <any>undefined;
-        data["creatorUserId"] = this.creatorUserId;
-        data["id"] = this.id;
-        return data; 
-    }
-
-    clone(): SocietyMember {
-        const json = this.toJSON();
-        let result = new SocietyMember();
-        result.init(json);
-        return result;
-    }
-}
-
-export interface ISocietyMember {
-    tenantId: number;
-    houseNo: string | undefined;
-    society: Society;
-    societyId: string;
-    user: User;
-    userId: number;
-    creationTime: moment.Moment;
-    creatorUserId: number | undefined;
-    id: number;
-}
-
-export class CreateSocietyInput implements ICreateSocietyInput {
-    readonly fullName: string | undefined;
-    readonly address: string | undefined;
-    readonly city: string | undefined;
-    readonly state: string | undefined;
-    readonly zipcode: string | undefined;
-    readonly country: string | undefined;
-    readonly registrationNumber: string | undefined;
-
-    constructor(data?: ICreateSocietyInput) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            (<any>this).fullName = _data["fullName"];
-            (<any>this).address = _data["address"];
-            (<any>this).city = _data["city"];
-            (<any>this).state = _data["state"];
-            (<any>this).zipcode = _data["zipcode"];
-            (<any>this).country = _data["country"];
-            (<any>this).registrationNumber = _data["registrationNumber"];
-        }
-    }
-
-    static fromJS(data: any): CreateSocietyInput {
-        data = typeof data === 'object' ? data : {};
-        let result = new CreateSocietyInput();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["fullName"] = this.fullName;
-        data["address"] = this.address;
-        data["city"] = this.city;
-        data["state"] = this.state;
-        data["zipcode"] = this.zipcode;
-        data["country"] = this.country;
-        data["registrationNumber"] = this.registrationNumber;
-        return data; 
-    }
-
-    clone(): CreateSocietyInput {
-        const json = this.toJSON();
-        let result = new CreateSocietyInput();
-        result.init(json);
-        return result;
-    }
-}
-
-export interface ICreateSocietyInput {
-    fullName: string | undefined;
-    address: string | undefined;
-    city: string | undefined;
-    state: string | undefined;
-    zipcode: string | undefined;
-    country: string | undefined;
-    registrationNumber: string | undefined;
-}
-
 export class SocietyDto implements ISocietyDto {
     fullName: string | undefined;
     address: string | undefined;
@@ -3954,7 +3078,7 @@ export class SocietyDto implements ISocietyDto {
     state: string | undefined;
     zipcode: string | undefined;
     country: string | undefined;
-    readonly registrationNumber: string | undefined;
+    registrationNumber: string | undefined;
     isDeleted: boolean;
     deleterUserId: number | undefined;
     deletionTime: moment.Moment | undefined;
@@ -3981,7 +3105,7 @@ export class SocietyDto implements ISocietyDto {
             this.state = _data["state"];
             this.zipcode = _data["zipcode"];
             this.country = _data["country"];
-            (<any>this).registrationNumber = _data["registrationNumber"];
+            this.registrationNumber = _data["registrationNumber"];
             this.isDeleted = _data["isDeleted"];
             this.deleterUserId = _data["deleterUserId"];
             this.deletionTime = _data["deletionTime"] ? moment(_data["deletionTime"].toString()) : <any>undefined;
@@ -4046,24 +3170,71 @@ export interface ISocietyDto {
     id: string;
 }
 
-export class SocietyListDto implements ISocietyListDto {
+export class SocietyDtoPagedResultDto implements ISocietyDtoPagedResultDto {
+    totalCount: number;
+    items: SocietyDto[] | undefined;
+
+    constructor(data?: ISocietyDtoPagedResultDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.totalCount = _data["totalCount"];
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items.push(SocietyDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): SocietyDtoPagedResultDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new SocietyDtoPagedResultDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["totalCount"] = this.totalCount;
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        return data; 
+    }
+
+    clone(): SocietyDtoPagedResultDto {
+        const json = this.toJSON();
+        let result = new SocietyDtoPagedResultDto();
+        result.init(json);
+        return result;
+    }
+}
+
+export interface ISocietyDtoPagedResultDto {
+    totalCount: number;
+    items: SocietyDto[] | undefined;
+}
+
+export class CreateScoietyDto implements ICreateScoietyDto {
     fullName: string | undefined;
     address: string | undefined;
     city: string | undefined;
     state: string | undefined;
     zipcode: string | undefined;
     country: string | undefined;
-    readonly registrationNumber: string | undefined;
-    isDeleted: boolean;
-    deleterUserId: number | undefined;
-    deletionTime: moment.Moment | undefined;
-    lastModificationTime: moment.Moment | undefined;
-    lastModifierUserId: number | undefined;
-    creationTime: moment.Moment;
-    creatorUserId: number | undefined;
-    id: string;
+    registrationNumber: string | undefined;
 
-    constructor(data?: ISocietyListDto) {
+    constructor(data?: ICreateScoietyDto) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -4080,21 +3251,13 @@ export class SocietyListDto implements ISocietyListDto {
             this.state = _data["state"];
             this.zipcode = _data["zipcode"];
             this.country = _data["country"];
-            (<any>this).registrationNumber = _data["registrationNumber"];
-            this.isDeleted = _data["isDeleted"];
-            this.deleterUserId = _data["deleterUserId"];
-            this.deletionTime = _data["deletionTime"] ? moment(_data["deletionTime"].toString()) : <any>undefined;
-            this.lastModificationTime = _data["lastModificationTime"] ? moment(_data["lastModificationTime"].toString()) : <any>undefined;
-            this.lastModifierUserId = _data["lastModifierUserId"];
-            this.creationTime = _data["creationTime"] ? moment(_data["creationTime"].toString()) : <any>undefined;
-            this.creatorUserId = _data["creatorUserId"];
-            this.id = _data["id"];
+            this.registrationNumber = _data["registrationNumber"];
         }
     }
 
-    static fromJS(data: any): SocietyListDto {
+    static fromJS(data: any): CreateScoietyDto {
         data = typeof data === 'object' ? data : {};
-        let result = new SocietyListDto();
+        let result = new CreateScoietyDto();
         result.init(data);
         return result;
     }
@@ -4108,26 +3271,18 @@ export class SocietyListDto implements ISocietyListDto {
         data["zipcode"] = this.zipcode;
         data["country"] = this.country;
         data["registrationNumber"] = this.registrationNumber;
-        data["isDeleted"] = this.isDeleted;
-        data["deleterUserId"] = this.deleterUserId;
-        data["deletionTime"] = this.deletionTime ? this.deletionTime.toISOString() : <any>undefined;
-        data["lastModificationTime"] = this.lastModificationTime ? this.lastModificationTime.toISOString() : <any>undefined;
-        data["lastModifierUserId"] = this.lastModifierUserId;
-        data["creationTime"] = this.creationTime ? this.creationTime.toISOString() : <any>undefined;
-        data["creatorUserId"] = this.creatorUserId;
-        data["id"] = this.id;
         return data; 
     }
 
-    clone(): SocietyListDto {
+    clone(): CreateScoietyDto {
         const json = this.toJSON();
-        let result = new SocietyListDto();
+        let result = new CreateScoietyDto();
         result.init(json);
         return result;
     }
 }
 
-export interface ISocietyListDto {
+export interface ICreateScoietyDto {
     fullName: string | undefined;
     address: string | undefined;
     city: string | undefined;
@@ -4135,65 +3290,6 @@ export interface ISocietyListDto {
     zipcode: string | undefined;
     country: string | undefined;
     registrationNumber: string | undefined;
-    isDeleted: boolean;
-    deleterUserId: number | undefined;
-    deletionTime: moment.Moment | undefined;
-    lastModificationTime: moment.Moment | undefined;
-    lastModifierUserId: number | undefined;
-    creationTime: moment.Moment;
-    creatorUserId: number | undefined;
-    id: string;
-}
-
-export class SocietyListDtoListResultDto implements ISocietyListDtoListResultDto {
-    items: SocietyListDto[] | undefined;
-
-    constructor(data?: ISocietyListDtoListResultDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            if (Array.isArray(_data["items"])) {
-                this.items = [] as any;
-                for (let item of _data["items"])
-                    this.items.push(SocietyListDto.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): SocietyListDtoListResultDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new SocietyListDtoListResultDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        if (Array.isArray(this.items)) {
-            data["items"] = [];
-            for (let item of this.items)
-                data["items"].push(item.toJSON());
-        }
-        return data; 
-    }
-
-    clone(): SocietyListDtoListResultDto {
-        const json = this.toJSON();
-        let result = new SocietyListDtoListResultDto();
-        result.init(json);
-        return result;
-    }
-}
-
-export interface ISocietyListDtoListResultDto {
-    items: SocietyListDto[] | undefined;
 }
 
 export class CreateTenantDto implements ICreateTenantDto {
@@ -4202,6 +3298,12 @@ export class CreateTenantDto implements ICreateTenantDto {
     adminEmailAddress: string;
     connectionString: string | undefined;
     isActive: boolean;
+    address: string;
+    city: string;
+    state: string;
+    zipcode: string;
+    country: string;
+    registrationNumber: string;
 
     constructor(data?: ICreateTenantDto) {
         if (data) {
@@ -4219,6 +3321,12 @@ export class CreateTenantDto implements ICreateTenantDto {
             this.adminEmailAddress = _data["adminEmailAddress"];
             this.connectionString = _data["connectionString"];
             this.isActive = _data["isActive"];
+            this.address = _data["address"];
+            this.city = _data["city"];
+            this.state = _data["state"];
+            this.zipcode = _data["zipcode"];
+            this.country = _data["country"];
+            this.registrationNumber = _data["registrationNumber"];
         }
     }
 
@@ -4236,6 +3344,12 @@ export class CreateTenantDto implements ICreateTenantDto {
         data["adminEmailAddress"] = this.adminEmailAddress;
         data["connectionString"] = this.connectionString;
         data["isActive"] = this.isActive;
+        data["address"] = this.address;
+        data["city"] = this.city;
+        data["state"] = this.state;
+        data["zipcode"] = this.zipcode;
+        data["country"] = this.country;
+        data["registrationNumber"] = this.registrationNumber;
         return data; 
     }
 
@@ -4253,12 +3367,23 @@ export interface ICreateTenantDto {
     adminEmailAddress: string;
     connectionString: string | undefined;
     isActive: boolean;
+    address: string;
+    city: string;
+    state: string;
+    zipcode: string;
+    country: string;
+    registrationNumber: string;
 }
 
 export class TenantDto implements ITenantDto {
     tenancyName: string;
     name: string;
     isActive: boolean;
+    city: string;
+    state: string;
+    zipcode: string;
+    country: string;
+    registrationNumber: string;
     id: number;
 
     constructor(data?: ITenantDto) {
@@ -4275,6 +3400,11 @@ export class TenantDto implements ITenantDto {
             this.tenancyName = _data["tenancyName"];
             this.name = _data["name"];
             this.isActive = _data["isActive"];
+            this.city = _data["city"];
+            this.state = _data["state"];
+            this.zipcode = _data["zipcode"];
+            this.country = _data["country"];
+            this.registrationNumber = _data["registrationNumber"];
             this.id = _data["id"];
         }
     }
@@ -4291,6 +3421,11 @@ export class TenantDto implements ITenantDto {
         data["tenancyName"] = this.tenancyName;
         data["name"] = this.name;
         data["isActive"] = this.isActive;
+        data["city"] = this.city;
+        data["state"] = this.state;
+        data["zipcode"] = this.zipcode;
+        data["country"] = this.country;
+        data["registrationNumber"] = this.registrationNumber;
         data["id"] = this.id;
         return data; 
     }
@@ -4307,6 +3442,11 @@ export interface ITenantDto {
     tenancyName: string;
     name: string;
     isActive: boolean;
+    city: string;
+    state: string;
+    zipcode: string;
+    country: string;
+    registrationNumber: string;
     id: number;
 }
 

@@ -18,6 +18,7 @@ import { AboutComponent } from '@app/about/about.component';
 import { TenantsComponent } from '@app/tenants/tenants.component';
 import { CreateTenantDialogComponent } from './tenants/create-tenant/create-tenant-dialog.component';
 import { EditTenantDialogComponent } from './tenants/edit-tenant/edit-tenant-dialog.component';
+import { ViewTenantComponent } from '@app/tenants/view-tenant/view-tenant.component';
 // roles
 import { RolesComponent } from '@app/roles/roles.component';
 import { CreateRoleDialogComponent } from './roles/create-role/create-role-dialog.component';
@@ -43,6 +44,7 @@ import {SocietiesComponent} from './society/societies.component';
 import {SocietyDetailComponent} from './society/society-detail/society-detail.component';
 import {CreateSocietyComponent} from './society/create-society/create-society.component';
 import { EditSocietyComponent } from './society/edit-society/edit-society.component';
+
 
 @NgModule({
   declarations: [
@@ -77,7 +79,8 @@ import { EditSocietyComponent } from './society/edit-society/edit-society.compon
     SocietiesComponent,
     SocietyDetailComponent,
     CreateSocietyComponent,
-    EditSocietyComponent
+        EditSocietyComponent,
+        ViewTenantComponent
   ],
   imports: [
     CommonModule,

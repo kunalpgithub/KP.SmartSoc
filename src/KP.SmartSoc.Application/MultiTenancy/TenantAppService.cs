@@ -74,7 +74,7 @@ namespace KP.SmartSoc.MultiTenancy
                 await CurrentUnitOfWork.SaveChangesAsync(); // To get static role ids
 
                 // Grant all permissions to admin role
-                var adminRole = _roleManager.Roles.Single(r => r.Name == StaticRoleNames.Tenants.Admin);
+                var adminRole = _roleManager.Roles.Single(r => r.Name == StaticRoleNames.Tenants.TenantAdmin);
                 await _roleManager.GrantAllPermissionsAsync(adminRole);
 
                 // Create admin user for the tenant
@@ -117,6 +117,12 @@ namespace KP.SmartSoc.MultiTenancy
         private void CheckErrors(IdentityResult identityResult)
         {
             identityResult.CheckErrors(LocalizationManager);
+        }
+
+        [AbpAuthorize(PermissionNames.Pages_View_Tenant,PermissionNames.Pages_Tenants)]
+        public override Task<TenantDto> GetAsync(EntityDto<int> input)
+        {
+            return base.GetAsync(input);
         }
     }
 }

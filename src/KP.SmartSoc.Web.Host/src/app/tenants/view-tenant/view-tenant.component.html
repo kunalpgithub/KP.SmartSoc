@@ -1,0 +1,11 @@
+﻿
+<div *ngIf="this.appSession.tenantId != null" class="card" style="width: 18rem;">
+    <div class="card-body">
+        <h5 class="card-title">{{tenant.name}}</h5>
+        <h6 class="card-subtitle mb-2 text-muted">{{tenant.registrationNumber}}</h6>
+        <p class="card-text">{{tenant.address}}</p>
+        <p class="card-text">{{tenant.city}}-{{tenant.zipcode}},{{tenant.state}}</p>
+        <a href="#" class="card-link">Add Member</a>
+        <a href="#" class="card-link">Edit Society</a>
+    </div>
+</div>

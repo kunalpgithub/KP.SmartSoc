@@ -9,7 +9,7 @@ namespace KP.SmartSoc.Authorization.Roles
 
         public static class Tenants
         {
-            public const string Admin = "Admin";
+            public const string TenantAdmin = "Tenant Admin";
         }
     }
 }

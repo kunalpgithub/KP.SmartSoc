@@ -3379,6 +3379,7 @@ export class TenantDto implements ITenantDto {
     tenancyName: string;
     name: string;
     isActive: boolean;
+    address: string;
     city: string;
     state: string;
     zipcode: string;
@@ -3400,6 +3401,7 @@ export class TenantDto implements ITenantDto {
             this.tenancyName = _data["tenancyName"];
             this.name = _data["name"];
             this.isActive = _data["isActive"];
+            this.address = _data["address"];
             this.city = _data["city"];
             this.state = _data["state"];
             this.zipcode = _data["zipcode"];
@@ -3421,6 +3423,7 @@ export class TenantDto implements ITenantDto {
         data["tenancyName"] = this.tenancyName;
         data["name"] = this.name;
         data["isActive"] = this.isActive;
+        data["address"] = this.address;
         data["city"] = this.city;
         data["state"] = this.state;
         data["zipcode"] = this.zipcode;
@@ -3442,6 +3445,7 @@ export interface ITenantDto {
     tenancyName: string;
     name: string;
     isActive: boolean;
+    address: string;
     city: string;
     state: string;
     zipcode: string;

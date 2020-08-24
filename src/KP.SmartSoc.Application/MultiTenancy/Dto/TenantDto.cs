@@ -20,6 +20,9 @@ namespace KP.SmartSoc.MultiTenancy.Dto
         public bool IsActive {get; set;}
 
         [Required]
+        public string Address { get; set; }
+
+        [Required]
         public string City { get; set; }
         [Required]
         public string State { get; set; }

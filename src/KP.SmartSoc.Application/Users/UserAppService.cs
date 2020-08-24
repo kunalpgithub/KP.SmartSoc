@@ -208,7 +208,7 @@ namespace KP.SmartSoc.Users
                 return false;
             }
             var roles = await _userManager.GetRolesAsync(currentUser);
-            if (!roles.Contains(StaticRoleNames.Tenants.Admin))
+            if (!roles.Contains(StaticRoleNames.Tenants.TenantAdmin))
             {
                 throw new UserFriendlyException("Only administrators may reset passwords.");
             }
